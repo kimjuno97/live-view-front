@@ -102,6 +102,12 @@ export default class Socket {
 	/** stream option 컨트롤 */
 	onOffToggleHandler(target) {
 		this.#onOffToggle[target] = !this.#onOffToggle[target];
+		const getTargetTracks =
+			target === 'video'
+				? this.#streamInfo.getVideoTracks()
+				: this.#streamInfo.getAudioTracks();
+
+		getTargetTracks.forEach(track => (track.enabled = !track.enabled));
 	}
 	/** video, audio boolean 정보로 상태 text 전달 */
 	namedAButton() {

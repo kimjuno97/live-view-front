@@ -54,7 +54,6 @@ function App() {
 
 	const videoHandler = async target => {
 		socket.onOffToggleHandler(target);
-		await socket.savedStreamInfo();
 		socket.showVideo(videoRef.current);
 		setHook(prev => !prev);
 	};

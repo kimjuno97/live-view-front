@@ -45,7 +45,6 @@ function App() {
 				socket.joinRoomEmit();
 			};
 			calling();
-			socket.echo();
 		} else {
 			// input창 foucs
 			formInputRef.current.focus();

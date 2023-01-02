@@ -5,7 +5,8 @@ import './main.css';
 import Socket from './api/socket';
 
 import PlayersVideo from './PlayersVideo';
-// socket 세팅
+
+/** socket initial */
 const socket = new Socket(process.env.REACT_APP_WEBSOCKET_URL);
 socket.init();
 
@@ -19,44 +20,46 @@ function App() {
 
 	const [showVideo, setShowVideo] = useState(false);
 
-	const [onOffToggles, setOnOffToggles] = useState({
-		video: true,
-		audio: true,
-	});
+	// hook hanlder, class로 값을 컨트롤 해서 hook handler 필요
+	// eslint-disable-next-line no-unused-vars
+	const [_, setHook] = useState(true);
 
-	const videoConnectHandler = e => {
-		e.preventDefault();
-		socket.savedRoomName(formInputRef.current.value);
-		formInputRef.current.value = '';
-		setShowVideo(prev => !prev);
-	};
-
-	// player 추가 하는 함수
+	/** player 추가 하는 함수 */
 	const handleAddStream = data => {
 		setPlayers(prev => [...prev, data.stream]);
 	};
-	console.log('plater', players);
-	useEffect(() => {
-		// 끌어 올리자 useEffect에서 실행되면 안됨
-		if (showVideo) {
-			const calling = async () => {
-				videoRef.current.srcObject = await socket.savedStreamInfo(onOffToggles);
-				socket.settingPeerConnection(handleAddStream);
-				socket.joinRoomEmit();
-			};
-			calling();
-		} else {
-			// input창 foucs
-			formInputRef.current.focus();
-		}
-	}, [onOffToggles, showVideo]);
 
-	const videoHandler = target => {
-		setOnOffToggles(prev => ({ ...prev, [target]: !prev[target] }));
+	const calling = async () => {
+		await socket.savedStreamInfo();
+		socket.settingPeerConnection(handleAddStream);
+		socket.joinRoomEmit();
 	};
 
-	const cameraBtn = onOffToggles.camera ? 'camera off' : 'camera on';
-	const speakerBtn = onOffToggles.speaker ? 'mute' : 'unmute';
+	const videoConnectHandler = async e => {
+		e.preventDefault();
+		socket.savedRoomName(formInputRef.current.value);
+		formInputRef.current.value = '';
+		await calling();
+		setShowVideo(prev => !prev);
+	};
+
+	useEffect(() => {
+		if (showVideo) {
+			// 마운트 된 후에 실행되야 함
+			socket.showVideo(videoRef.current);
+		} else {
+			formInputRef.current.focus();
+		}
+	}, [showVideo]);
+
+	const videoHandler = async target => {
+		socket.onOffToggleHandler(target);
+		await socket.savedStreamInfo();
+		socket.showVideo(videoRef.current);
+		setHook(prev => !prev);
+	};
+
+	const { speakerBtn, cameraBtn } = socket.namedAButton();
 
 	return (
 		<>

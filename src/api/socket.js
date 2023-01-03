@@ -9,6 +9,7 @@ export default class Socket {
 		video: true,
 		audio: true,
 	};
+
 	constructor(url) {
 		this.#socket = io(url, {
 			withCredentials: true,
@@ -114,5 +115,15 @@ export default class Socket {
 		const cameraBtn = this.#onOffToggle.video ? 'camera off' : 'camera on';
 		const speakerBtn = this.#onOffToggle.audio ? 'mute' : 'unmute';
 		return { cameraBtn, speakerBtn };
+	}
+
+	sendChat(value) {
+		this.#socket.emit('message', value, this.#saveRoomName);
+	}
+	returnChat(setState) {
+		this.#socket.on('message', msg => {
+			console.log(msg);
+			setState(msg);
+		});
 	}
 }

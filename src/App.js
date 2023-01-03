@@ -60,6 +60,14 @@ function App() {
 
 	const { speakerBtn, cameraBtn } = socket.namedAButton();
 
+	const [chat, setChat] = useState('');
+
+	const chatHandler = ({ target: { value } }) => {
+		console.log(value);
+		socket.sendChat(value);
+	};
+	socket.returnChat(setChat);
+
 	return (
 		<>
 			<div className='App'>hello world</div>
@@ -73,17 +81,24 @@ function App() {
 					<button type='submit'>Enter room</button>
 				</form>
 			)}
+
 			<hr />
 			{showVideo && (
-				<div>
-					<video
-						autoPlay
-						playsInline
-						ref={videoRef}
-					/>
-					<br />
-					<button onClick={() => videoHandler('video')}>{cameraBtn}</button>
-					<button onClick={() => videoHandler('audio')}>{speakerBtn}</button>
+				<div className='position'>
+					<div>
+						<video
+							autoPlay
+							playsInline
+							ref={videoRef}
+						/>
+						<br />
+						<button onClick={() => videoHandler('video')}>{cameraBtn}</button>
+						<button onClick={() => videoHandler('audio')}>{speakerBtn}</button>
+					</div>
+					<div className='chat'>
+						<div className='content'>{chat}</div>
+						<input onChange={chatHandler} />
+					</div>
 				</div>
 			)}
 			<br />

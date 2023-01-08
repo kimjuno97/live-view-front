@@ -25,6 +25,7 @@ export default class Socket {
 		// Peer A 방장
 		this.#socket.on('welcome', async () => {
 			const offer = await this.#peerConnection.createOffer();
+
 			this.#peerConnection.setLocalDescription(offer);
 			this.#socket.emit('offer', offer, this.#saveRoomName);
 		});
@@ -44,6 +45,7 @@ export default class Socket {
 			this.#peerConnection.addIceCandidate(ice);
 		});
 	}
+
 	/** 객체 내부 전체 콘솔 함수 */
 	echo() {
 		console.log('========= echo ========');
@@ -80,6 +82,7 @@ export default class Socket {
 	 */
 	settingPeerConnection(addPlayerFn) {
 		this.#peerConnection = new RTCPeerConnection();
+
 		// arrow fn을 사용한 this가 가르키는 객체 컨트롤
 		this.#peerConnection.addEventListener('icecandidate', data =>
 			this.iceEmit(data)
@@ -122,7 +125,6 @@ export default class Socket {
 	}
 	returnChat(setState) {
 		this.#socket.on('message', msg => {
-			console.log(msg);
 			setState(msg);
 		});
 	}
